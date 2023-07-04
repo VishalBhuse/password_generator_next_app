@@ -1,95 +1,176 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+import React, { useState } from "react";
+import GeneratePassword from "./GeneratePassword";
+const Home = () => {
+  const [password, setPassword] = useState("");
+  const [length, setLength] = useState(6);
+  const [uppercase, SetUppercase] = useState(false);
+  const [numbers, setNumbers] = useState(false);
+  const [symbols, setSymbols] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [isCopied, setIsCopied] = useState(false);
 
-export default function Home() {
+  const handleRange = (e) => {
+    setLength(Number(e.target.value));
+  };
+
+  const handleGeneratePass = () => {
+    const generatedPassword = GeneratePassword(
+      length,
+      uppercase,
+      numbers,
+      symbols
+    );
+    setPassword(generatedPassword);
+    navigator.clipboard.writeText(generatedPassword);
+    CalcPasswordStrength(generatedPassword);
+  };
+
+  const handleFilter = (e) => {
+    const { name, checked } = e.target;
+
+    if (name === "uppercase") {
+      SetUppercase(checked);
+    } else if (name === "numbers") {
+      setNumbers(checked);
+    } else if (name === "symbols") {
+      setSymbols(checked);
+    }
+  };
+
+  const CalcPasswordStrength = (password) => {
+    const checkUppercase = /[A-Z]/.test(password);
+    const checkLowercase = /[a-z]/.test(password);
+    const checkNumber = /\d/.test(password);
+    const checkSymbol = /[!@#$%^&*()]/.test(password);
+    const minLength = 8;
+
+    let strength = 0;
+
+    if (password.length >= minLength) {
+      strength++;
+    }
+    if (checkUppercase) {
+      strength++;
+    }
+    if (checkLowercase) {
+      strength++;
+    }
+    if (checkNumber) {
+      strength++;
+    }
+    if (checkSymbol) {
+      strength++;
+    }
+
+    setPasswordStrength(strength);
+  };
+
+  const handleCopyPassword = () => {
+    navigator.clipboard.writeText(password);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <div className="main_container">
+      <div className="parent_div">
+        <h3>Password Generator</h3>
+        <div className="pass_copy">
+          <p>{password || "Genreate Password"}</p>
+          <i
+            className={`fas fa-copy cpysvg ${isCopied ? "copied" : ""}`}
+            onClick={handleCopyPassword}
+          ></i>
+          {isCopied && <span className="tooltip">Copied!</span>}
+        </div>
+        <div className="secodnchild">
+          <div className="char_len">
+            <p>character length</p>
+            <p>{length}</p>
+          </div>
+          <div className="range">
+            <input
+              type="range"
+              min="6"
+              max="15"
+              className="rangeinput"
+              value={length}
+              onChange={handleRange}
             />
-          </a>
+          </div>
+          <div className="filter">
+            <div>
+              <input
+                type="checkbox"
+                name="uppercase"
+                checked={uppercase}
+                onChange={handleFilter}
+              />
+              <span>include uppercase letter</span>
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                name="numbers"
+                checked={numbers}
+                onChange={handleFilter}
+              />
+              <span>include number</span>
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                name="symbols"
+                checked={symbols}
+                onChange={handleFilter}
+              />
+              <span>include symbols</span>
+            </div>
+          </div>
+          <div className="strength">
+            <p>strength</p>
+            <div className="strenghcheck">
+              <span
+                style={{
+                  backgroundColor:
+                    passwordStrength >= 1 ? "green" : "transparent",
+                }}
+              ></span>
+              <span
+                style={{
+                  backgroundColor:
+                    passwordStrength >= 2 ? "green" : "transparent",
+                }}
+              ></span>
+              <span
+                style={{
+                  backgroundColor:
+                    passwordStrength >= 3 ? "green" : "transparent",
+                }}
+              ></span>
+              <span
+                style={{
+                  backgroundColor:
+                    passwordStrength >= 4 ? "green" : "transparent",
+                }}
+              ></span>
+              <span
+                style={{
+                  backgroundColor:
+                    passwordStrength >= 5 ? "green" : "transparent",
+                }}
+              ></span>
+            </div>
+          </div>
+          <button className="generate" onClick={handleGeneratePass}>
+            Generate
+            <i className="fas fa-arrow-right"></i>
+          </button>
         </div>
       </div>
+    </div>
+  );
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default Home;
