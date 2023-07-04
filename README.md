@@ -3,7 +3,7 @@
 ## Live Link : - https://password-generator-next-app.vercel.app/
 
 ## Tech Stack
-- React JS,
+- Next JS,
 - Vercel (for Deployment)
 
 ## Functionality :
